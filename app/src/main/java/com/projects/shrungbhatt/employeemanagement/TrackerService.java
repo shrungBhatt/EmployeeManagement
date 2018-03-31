@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -83,12 +84,13 @@ public class TrackerService extends Service {
     }
 
     private void requestLocationUpdates() {
-        LocationRequest request = new LocationRequest();
+        @SuppressLint("RestrictedApi") LocationRequest request = new LocationRequest();
         request.setInterval(10000);
         request.setFastestInterval(5000);
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
-        final String path = getString(R.string.firebase_path) + "/" + getString(R.string.transport_id);
+//        final String path = getString(R.string.firebase_path) + "/" + getString(R.string.transport_id);
+        final String path = "locations/shrung";
         int permission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
         if (permission == PackageManager.PERMISSION_GRANTED) {
