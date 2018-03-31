@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.projects.shrungbhatt.employeemanagement.R;
 import service.TrackerService;
 
-public class TrackerActivity extends Activity {
+public class TrackerActivity extends BaseActivity {
 
     private static final int PERMISSIONS_REQUEST = 1;
 
