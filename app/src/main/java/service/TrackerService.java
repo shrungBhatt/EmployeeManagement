@@ -1,4 +1,4 @@
-package com.projects.shrungbhatt.employeemanagement;
+package service;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -11,6 +11,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.projects.shrungbhatt.employeemanagement.R;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;

@@ -1,4 +1,4 @@
-package com.projects.shrungbhatt.employeemanagement;
+package activities;
 
 import android.Manifest;
 import android.app.Activity;
@@ -10,6 +10,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
+
+import com.projects.shrungbhatt.employeemanagement.R;
+import service.TrackerService;
 
 public class TrackerActivity extends Activity {
 
