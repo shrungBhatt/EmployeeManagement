@@ -43,13 +43,14 @@ public final class R {
         public static int calendar_prev_arrow = 0x7f090002;
         public static int cell_bg = 0x7f090003;
         public static int cell_bg_dark = 0x7f090004;
-        public static int disable_cell = 0x7f090005;
-        public static int disabled_cell_dark = 0x7f090006;
-        public static int left_arrow = 0x7f090007;
-        public static int red_border = 0x7f090008;
-        public static int red_border_dark = 0x7f090009;
-        public static int red_border_gray_bg = 0x7f09000a;
-        public static int right_arrow = 0x7f09000b;
+        public static int circlelayout = 0x7f090005;
+        public static int disable_cell = 0x7f090006;
+        public static int disabled_cell_dark = 0x7f090007;
+        public static int left_arrow = 0x7f090008;
+        public static int red_border = 0x7f090009;
+        public static int red_border_dark = 0x7f09000a;
+        public static int red_border_gray_bg = 0x7f09000b;
+        public static int right_arrow = 0x7f09000c;
     }
     public static final class id {
         public static int calendar_gridview = 0x7f0c0001;

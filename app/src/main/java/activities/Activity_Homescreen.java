@@ -1,38 +1,52 @@
 package activities;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.RelativeLayout;
 
-import com.applandeo.materialcalendarview.CalendarView;
-import com.applandeo.materialcalendarview.EventDay;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 import com.projects.shrungbhatt.employeemanagement.R;
 import com.roomorama.caldroid.CaldroidFragment;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import model.Res_FetchAttendances;
+import utils.MySharedPreferences;
+import utils.URLGenerator;
 
 public class Activity_Homescreen extends BaseActivity {
 
+    private final String TAG = getClass().getSimpleName();
     @BindView(R.id.calendar_view_1)
     RelativeLayout mCalendarView;
     @BindView(R.id.add_attendance_fab_button)
     FloatingActionButton mAddAttendanceFabButton;
 
     private CaldroidFragment caldroidFragment;
+    private SimpleDateFormat mFormatter;
 
 
+    @SuppressLint("SimpleDateFormat")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,17 +54,12 @@ public class Activity_Homescreen extends BaseActivity {
         ButterKnife.bind(this);
 
 
-
-        final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
+        mFormatter = new SimpleDateFormat("dd MMM yyyy");
 
         // Setup caldroid fragment
         // **** If you want normal CaldroidFragment, use below line ****
         caldroidFragment = new CaldroidFragment();
 
-        // //////////////////////////////////////////////////////////////////////
-        // **** This is to show customized fragment. If you want customized
-        // version, uncomment below line ****
-//		 caldroidFragment = new CaldroidSampleCustomFragment();
 
         // Setup arguments
 
@@ -68,50 +77,84 @@ public class Activity_Homescreen extends BaseActivity {
             args.putBoolean(CaldroidFragment.ENABLE_SWIPE, true);
             args.putBoolean(CaldroidFragment.SIX_WEEKS_IN_CALENDAR, true);
 
-            // Uncomment this to customize startDayOfWeek
-            // args.putInt(CaldroidFragment.START_DAY_OF_WEEK,
-            // CaldroidFragment.TUESDAY); // Tuesday
-
-            // Uncomment this line to use Caldroid in compact mode
-            // args.putBoolean(CaldroidFragment.SQUARE_TEXT_VIEW_CELL, false);
-
-            // Uncomment this line to use dark theme
-//            args.putInt(CaldroidFragment.THEME_RESOURCE, com.caldroid.R.style.CaldroidDefaultDark);
 
             caldroidFragment.setArguments(args);
         }
 
-//        setCustomResourceForDates();
 
         // Attach to the activity
         FragmentTransaction t = getSupportFragmentManager().beginTransaction();
         t.replace(R.id.calendar_view_1, caldroidFragment);
         t.commit();
 
+        caldroidFragment.setBackgroundDrawableForDate(getResources().
+                getDrawable(R.drawable.circlelayout1), new Date());
+
+        fetchAttendance(MySharedPreferences.getStoredUsername(this));
 
     }
 
-    /*private void setCustomResourceForDates() {
-        Calendar cal = Calendar.getInstance();
 
-        // Min date is last 7 days
-        cal.add(Calendar.DATE, -7);
-        Date blueDate = cal.getTime();
+    private void fetchAttendance(final String userName) {
+        showProgressBar(this, TAG);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                URLGenerator.FETCH_ATTENDANCE,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        hideProgressBar();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            Gson gson = new Gson();
+                            Res_FetchAttendances res_fetchAttendances;
+                            res_fetchAttendances = gson.fromJson(jsonObject.toString(), Res_FetchAttendances.class);
+                            setAttendedDate(res_fetchAttendances);
 
-        // Max date is next 7 days
-        cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 7);
-        Date greenDate = cal.getTime();
+                        } catch (JSONException e) {
+                            hideProgressBar();
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                hideProgressBar();
+                error.getMessage();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("user_name", userName);
 
-        if (caldroidFragment != null) {
-            ColorDrawable blue = new ColorDrawable(getResources().getColor(android.R.color.holo_blue_light));
-            ColorDrawable green = new ColorDrawable(Color.GREEN);
-            caldroidFragment.setBackgroundDrawableForDate(blue, blueDate);
-            caldroidFragment.setBackgroundDrawableForDate(green, greenDate);
-            caldroidFragment.setTextColorForDate(android.R.color.white, blueDate);
-            caldroidFragment.setTextColorForDate(android.R.color.white, greenDate);
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+
+
+    }
+
+    private void setAttendedDate(Res_FetchAttendances resFetchAttendances) {
+
+        for (int i = 0; i < resFetchAttendances.getList().size(); i++) {
+            try {
+                caldroidFragment.setBackgroundDrawableForDate(getDrawable(R.drawable.circlelayout1),
+                        mFormatter.parse(resFetchAttendances.getList().get(i).getDate()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
         }
-    }*/
+
+        caldroidFragment.refreshView();
+
+
+
+    }
 
 
     @OnClick(R.id.add_attendance_fab_button)

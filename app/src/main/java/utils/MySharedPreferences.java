@@ -20,54 +20,6 @@ public class MySharedPreferences {
 
 
 
-
-
-
-
-    public static String getAllRecipeArrayJson(Context context){
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(PREF_RECIPE_ARRAY_JSON,null);
-    }
-
-    public static void setAllRecipeArrayJson(Context context, String arrayJson){
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .putString(PREF_RECIPE_ARRAY_JSON,arrayJson).apply();
-
-    }
-
-    public static String getFavrtRecipeArrayJson(Context context){
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(PREF_FAVRT_RECIPE_ARRAY_JSON,null);
-    }
-
-    public static void setFavrtRecipeArrayJson(Context context, String arrayJson){
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .putString(PREF_FAVRT_RECIPE_ARRAY_JSON,arrayJson).apply();
-
-    }
-
-    public static String getRecipeDatasByCategory(Context context){
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(PREF_RECIPE_BYCATEGORY,null);
-    }
-
-    public static void setRecipeDatasByCategory(Context context, String arrayJson){
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .putString(PREF_RECIPE_BYCATEGORY,arrayJson).apply();
-
-    }
-
-    public static String getRecipeDatasByCuisines(Context context){
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(PREF_RECIPE_BYCUISINES,null);
-    }
-
-    public static void setRecipeDatasByCuisines(Context context, String arrayJson){
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .putString(PREF_RECIPE_BYCUISINES,arrayJson).apply();
-
-    }
-
     public static Boolean getStoredLoginStatus (Context context){
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(PREF_LOGIN_STATE,false);
