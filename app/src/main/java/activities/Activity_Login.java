@@ -64,6 +64,19 @@ public class Activity_Login extends BaseActivity implements Validator.Validation
         mValidator = new Validator(this);
         mValidator.setValidationListener(this);
 
+        boolean status = MySharedPreferences.getStoredLoginStatus(Activity_Login.this);
+        if (status) {
+            Intent i;
+            if (MySharedPreferences.isAdminLoggedOn(this)) {
+                i = new Intent(this, Activity_Homescreen.class);
+            } else {
+                i = new Intent(this, Activity_Homescreen.class);
+            }
+            startActivity(i);
+            finish();
+        }
+
+
 
     }
 
@@ -101,13 +114,13 @@ public class Activity_Login extends BaseActivity implements Validator.Validation
                                 Intent i;
                                 if (user_name.equalsIgnoreCase("admin")&&password.equalsIgnoreCase("admin")) {
                                     MySharedPreferences.setIsAdminLoggedOn(Activity_Login.this, true);
-//                                    i = new Intent(Activity_Login.this, Activity_DoctorAppointmentList.class);
-//                                    finish();
+                                    i = new Intent(Activity_Login.this, Activity_Homescreen.class);
+                                    finish();
                                 } else {
-//                                    i = new Intent(Activity_Login.this, Activity_DiseaseList.class);
-//                                    finish();
+                                    i = new Intent(Activity_Login.this, Activity_Homescreen.class);
+                                    finish();
                                 }
-//                                startActivity(i);
+                                startActivity(i);
                             } else {
                                 Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT)
                                         .show();

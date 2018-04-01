@@ -23,7 +23,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/home/jigsaw/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/maps/ic_person_pin_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/home/jigsaw/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_check_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -33,9 +33,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_tracker" />
+                                      <entry key="outputName" value="check_mark" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="a82014" />
+                                      <entry key="themeColor" value="ff4081" />
                                     </map>
                                   </option>
                                 </PersistentState>
