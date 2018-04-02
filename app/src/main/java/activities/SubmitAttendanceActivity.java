@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Base64;
@@ -94,6 +95,9 @@ public class SubmitAttendanceActivity extends BaseActivity {
                         Toast.makeText(getApplicationContext(), "Registration Complete",
                                 Toast.LENGTH_SHORT).show();
 
+                        startActivity(new Intent(this,Activity_Homescreen.class).
+                        addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                        finish();
 
                     } else {
                         showToastMessage(response);
@@ -147,12 +151,12 @@ public class SubmitAttendanceActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == Const.OpenCamera) {
-//                out = new File(getFilesDir(), Const.IMAGE_CAPTURED);
-                Uri filePath = data.getData();
+                out = new File(getFilesDir(), Const.IMAGE_CAPTURED);
+//                Uri filePath = data.getData();
                 mUploadDocumentImage.setVisibility(View.GONE);
                 mUploadDocumentTv.setVisibility(View.GONE);
                 try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),filePath);
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),Uri.fromFile(out));
                     mDocumentsImageView.setImageBitmap(bitmap);
                     setImage(getStringImage(bitmap));
                 } catch (IOException e) {
