@@ -1,6 +1,7 @@
 package activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -99,29 +100,23 @@ public class Activity_Homescreen extends BaseActivity {
         showProgressBar(this, TAG);
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 URLGenerator.FETCH_ATTENDANCE,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        hideProgressBar();
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            Gson gson = new Gson();
-                            Res_FetchAttendances res_fetchAttendances;
-                            res_fetchAttendances = gson.fromJson(jsonObject.toString(), Res_FetchAttendances.class);
-                            setAttendedDate(res_fetchAttendances);
+                response -> {
+                    hideProgressBar();
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        Gson gson = new Gson();
+                        Res_FetchAttendances res_fetchAttendances;
+                        res_fetchAttendances = gson.fromJson(jsonObject.toString(), Res_FetchAttendances.class);
+                        setAttendedDate(res_fetchAttendances);
 
-                        } catch (JSONException e) {
-                            hideProgressBar();
-                            e.printStackTrace();
-                        }
+                    } catch (JSONException e) {
+                        hideProgressBar();
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                hideProgressBar();
-                error.getMessage();
-            }
-        }) {
+                }, error -> {
+                    hideProgressBar();
+                    error.getMessage();
+                }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
@@ -159,5 +154,8 @@ public class Activity_Homescreen extends BaseActivity {
 
     @OnClick(R.id.add_attendance_fab_button)
     public void onViewClicked() {
+        startActivity(new Intent(this,SubmitAttendanceActivity.class));
     }
+
+
 }

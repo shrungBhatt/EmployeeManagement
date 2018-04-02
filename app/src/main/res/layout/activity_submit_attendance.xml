@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/upload_date_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            android:text="Capture Image"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/text_size_18"
+            android:textStyle="bold" />
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="10dp">
+
+            <FrameLayout
+                android:id="@+id/frm_openimagepicker"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+
+                android:background="@drawable/backgrounbox_graycolor">
+
+
+                <ImageView
+                    android:id="@+id/documents_image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/upload_document_image"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/upload_img" />
+
+                    <TextView
+                        android:id="@+id/upload_document_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:text="Capture Image"
+                        android:textColor="@color/darkgray"
+                        android:textSize="@dimen/text_size_16" />
+
+                </LinearLayout>
+
+
+            </FrameLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <TextView
+            android:id="@+id/upload_time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            android:text="Capture Image"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/text_size_16"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/upload_attendance_fab_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:src="@drawable/upload"
+        app:backgroundTint="@color/colorPrimary"
+        app:elevation="6dp"
+        app:fabSize="auto"
+        tools:targetApi="lollipop" />
+</FrameLayout>
