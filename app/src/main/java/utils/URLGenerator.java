@@ -13,5 +13,7 @@ public class URLGenerator {
 
     public static final String ADD_ATTENDANCE = BASE_URL + "/em_add_attendance.php";
 
+    public static final String CHECK_IS_SUBMITTED = BASE_URL + "/em_check_issubmitted.php";
+
 
 }

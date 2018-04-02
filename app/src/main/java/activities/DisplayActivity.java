@@ -99,17 +99,14 @@ public class DisplayActivity extends FragmentActivity implements OnMapReadyCallb
         String password = "huntjigsaw";
         // Authenticate with Firebase and subscribe to updates
         FirebaseAuth.getInstance().signInWithEmailAndPassword(
-                email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    subscribeToUpdates();
-                    Log.d(TAG, "firebase auth success");
-                } else {
-                    Log.d(TAG, "firebase auth failed");
-                }
-            }
-        });
+                email, password).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        subscribeToUpdates();
+                        Log.d(TAG, "firebase auth success");
+                    } else {
+                        Log.d(TAG, "firebase auth failed");
+                    }
+                });
     }
 
     private void subscribeToUpdates() {

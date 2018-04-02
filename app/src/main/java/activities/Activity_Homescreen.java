@@ -106,7 +106,8 @@ public class Activity_Homescreen extends BaseActivity {
                         JSONObject jsonObject = new JSONObject(response);
                         Gson gson = new Gson();
                         Res_FetchAttendances res_fetchAttendances;
-                        res_fetchAttendances = gson.fromJson(jsonObject.toString(), Res_FetchAttendances.class);
+                        res_fetchAttendances = gson.fromJson(jsonObject.toString(),
+                                Res_FetchAttendances.class);
                         setAttendedDate(res_fetchAttendances);
 
                     } catch (JSONException e) {
@@ -114,9 +115,9 @@ public class Activity_Homescreen extends BaseActivity {
                         e.printStackTrace();
                     }
                 }, error -> {
-                    hideProgressBar();
-                    error.getMessage();
-                }) {
+            hideProgressBar();
+            error.getMessage();
+        }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
@@ -130,6 +131,41 @@ public class Activity_Homescreen extends BaseActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
 
+
+    }
+
+    private void checkIsSubmitted() {
+        showProgressBar(this, TAG);
+
+        final String userName = MySharedPreferences.getStoredUsername(this);
+        final String date = mFormatter.format(new Date());
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                URLGenerator.CHECK_IS_SUBMITTED,
+                response -> {
+                    hideProgressBar();
+                    if(response.equalsIgnoreCase("TRUE")){
+                        showToastMessage("You have already submitted today's attendance");
+                    }else if(response.equalsIgnoreCase("FALSE")){
+
+                        startActivity(new Intent(this, SubmitAttendanceActivity.class));
+                    }
+
+                }, error -> {
+            hideProgressBar();
+        }) {
+
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("user_name", userName);
+                params.put("date",date);
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
 
     }
 
@@ -148,13 +184,12 @@ public class Activity_Homescreen extends BaseActivity {
         caldroidFragment.refreshView();
 
 
-
     }
 
 
     @OnClick(R.id.add_attendance_fab_button)
     public void onViewClicked() {
-        startActivity(new Intent(this,SubmitAttendanceActivity.class));
+        checkIsSubmitted();
     }
 
 
