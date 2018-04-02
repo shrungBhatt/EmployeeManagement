@@ -26,5 +26,7 @@
     <string name="phone_no">Phone no.</string>
     <string name="promt_username">Username</string>
     <string name="prompt_username">Username</string>
+    <string name="log_out">Log out</string>
+    <string name="profile">Profile</string>
 
 </resources>

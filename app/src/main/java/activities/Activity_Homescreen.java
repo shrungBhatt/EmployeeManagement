@@ -6,7 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -186,6 +190,37 @@ public class Activity_Homescreen extends BaseActivity {
 
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.log_out_menu_item) {
+            if(isNetworkAvailableAndConnected()){
+                MySharedPreferences.setStoredLoginStatus(this,false);
+                Intent i = new Intent(this, Activity_Login.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                Toast.makeText(this, "Logged Out", Toast.LENGTH_SHORT).show();
+                finish();
+            }else {
+                Toast.makeText(this,"No Internet Connection",Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        }else if(id == R.id.menu_user_profile){
+            startActivity(new Intent(this,Activity_Profile.class));
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.activity_menu, menu);
+
+        return true;
+    }
 
     @OnClick(R.id.add_attendance_fab_button)
     public void onViewClicked() {

@@ -15,5 +15,7 @@ public class URLGenerator {
 
     public static final String CHECK_IS_SUBMITTED = BASE_URL + "/em_check_issubmitted.php";
 
+    public static final String FETCH_USER_PROFILE = BASE_URL + "/em_fetch_user_profile.php";
+
 
 }
