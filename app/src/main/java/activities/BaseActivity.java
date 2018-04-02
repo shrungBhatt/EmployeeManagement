@@ -122,9 +122,11 @@ public class BaseActivity extends AppCompatActivity {
      * @param requestCode int value
      */
     public void OpenCamera(int requestCode) {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent intent = new Intent();
         Uri capturedPhotoURI = MyFileContentProvider.CONTENT_URI;
-
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedPhotoURI);
         startActivityForResult(intent, requestCode);
     }

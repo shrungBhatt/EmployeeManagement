@@ -106,30 +106,24 @@ public class SignupActivity extends BaseActivity implements Validator.Validation
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 URLGenerator.REGISTER_USER,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        hideProgressBar();
-                        if (response.equals("Insert SuccessFul")) {
-                            Toast.makeText(getApplicationContext(), "Registration Complete",
-                                    Toast.LENGTH_SHORT).show();
+                response -> {
+                    hideProgressBar();
+                    if (response.equals("Insert SuccessFul")) {
+                        Toast.makeText(getApplicationContext(), "Registration Complete",
+                                Toast.LENGTH_SHORT).show();
 
-                            Intent intent = new Intent(SignupActivity.this, Activity_Login.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            showToastMessage("Something went wrong!");
-                        }
-
+                        Intent intent = new Intent(SignupActivity.this, Activity_Login.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        showToastMessage("Something went wrong!");
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                hideProgressBar();
-                error.getMessage();
-            }
-        }) {
+
+                }, error -> {
+                    hideProgressBar();
+                    error.getMessage();
+                }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();

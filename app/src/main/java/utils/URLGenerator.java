@@ -10,4 +10,8 @@ public class URLGenerator {
     public static final String LOGIN_USER = BASE_URL + "/em_user_login.php";
 
     public static final String FETCH_ATTENDANCE = BASE_URL + "/em_fetch_user_attendances.php";
+
+    public static final String ADD_ATTENDANCE = BASE_URL + "/em_add_attendance.php";
+
+
 }

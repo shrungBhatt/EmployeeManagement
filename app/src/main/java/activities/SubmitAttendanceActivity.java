@@ -13,7 +13,14 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.projects.shrungbhatt.employeemanagement.R;
 
 import java.io.ByteArrayOutputStream;
@@ -21,14 +28,20 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import utils.Const;
+import utils.MySharedPreferences;
+import utils.URLGenerator;
 
 public class SubmitAttendanceActivity extends BaseActivity {
 
+    private final String TAG = getClass().getSimpleName();
     @BindView(R.id.upload_date_tv)
     TextView mUploadDateTv;
     @BindView(R.id.documents_image_view)
@@ -66,6 +79,54 @@ public class SubmitAttendanceActivity extends BaseActivity {
         mUploadTimeTv.setText(time);
     }
 
+
+    private void addAttendance(final String date, final String time, final String photoDesc,
+                               final String image, final String userName,
+                               final String isSubmitted) {
+
+        showProgressBar(this,TAG);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                URLGenerator.ADD_ATTENDANCE,
+                response -> {
+                    hideProgressBar();
+                    if (response.equals("Insert SuccessFul")) {
+                        Toast.makeText(getApplicationContext(), "Registration Complete",
+                                Toast.LENGTH_SHORT).show();
+
+
+                    } else {
+                        showToastMessage(response);
+                    }
+
+                }, error -> {
+            hideProgressBar();
+            error.getMessage();
+
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+
+                params.put("user_name", userName);
+                params.put("date", date);
+                params.put("time", time);
+                params.put("image", image);
+                params.put("image_desc", photoDesc);
+                params.put("is_submitted", isSubmitted);
+
+
+                return params;
+            }
+
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+
+    }
+
     @OnClick({R.id.upload_document_image, R.id.upload_attendance_fab_button})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -73,7 +134,10 @@ public class SubmitAttendanceActivity extends BaseActivity {
                 requestPersmission();
                 break;
             case R.id.upload_attendance_fab_button:
-
+                addAttendance(mDateFormat.format(new Date()),
+                        mTimeFormat.format(new Date()),
+                        UUID.randomUUID().toString()+"img",getImage(),
+                        MySharedPreferences.getStoredUsername(this),"1");
                 break;
         }
     }
@@ -83,11 +147,12 @@ public class SubmitAttendanceActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == Const.OpenCamera) {
-                out = new File(getFilesDir(), Const.IMAGE_CAPTURED);
+//                out = new File(getFilesDir(), Const.IMAGE_CAPTURED);
+                Uri filePath = data.getData();
                 mUploadDocumentImage.setVisibility(View.GONE);
                 mUploadDocumentTv.setVisibility(View.GONE);
                 try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(out));
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),filePath);
                     mDocumentsImageView.setImageBitmap(bitmap);
                     setImage(getStringImage(bitmap));
                 } catch (IOException e) {
