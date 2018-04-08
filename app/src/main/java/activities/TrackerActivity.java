@@ -46,7 +46,6 @@ public class TrackerActivity extends BaseActivity {
 
     private void startTrackerService() {
         startService(new Intent(this, TrackerService.class));
-        finish();
     }
 
     @Override
@@ -56,8 +55,6 @@ public class TrackerActivity extends BaseActivity {
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // Start the service when the permission is granted
             startTrackerService();
-        } else {
-            finish();
         }
     }
 }

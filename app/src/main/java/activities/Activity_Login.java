@@ -68,7 +68,7 @@ public class Activity_Login extends BaseActivity implements Validator.Validation
         if (status) {
             Intent i;
             if (MySharedPreferences.isAdminLoggedOn(this)) {
-                i = new Intent(this, Activity_Homescreen.class);
+                i = new Intent(this, Activity_EmplyoeeList.class);
             } else {
                 i = new Intent(this, Activity_Homescreen.class);
             }
@@ -110,9 +110,9 @@ public class Activity_Login extends BaseActivity implements Validator.Validation
                             MySharedPreferences.setStoredLoginStatus(Activity_Login.this, true);
                             MySharedPreferences.setStoredUsername(Activity_Login.this, user_name);
                             Intent i;
-                            if (user_name.equalsIgnoreCase("admin")&&password.equalsIgnoreCase("admin")) {
+                            if (user_name.equalsIgnoreCase("admin")&&password.equalsIgnoreCase("123456")) {
                                 MySharedPreferences.setIsAdminLoggedOn(Activity_Login.this, true);
-                                i = new Intent(Activity_Login.this, Activity_Homescreen.class);
+                                i = new Intent(Activity_Login.this, Activity_EmplyoeeList.class);
                                 finish();
                             } else {
                                 i = new Intent(Activity_Login.this, Activity_Homescreen.class);
@@ -148,63 +148,6 @@ public class Activity_Login extends BaseActivity implements Validator.Validation
 
 
     }
-
-
-    private void logInUser(final String user_name, final String password) {
-        showProgressBar(this, TAG);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                URLGenerator.LOGIN_USER,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        hideProgressBar();
-                        try {
-                            if (response != null &&
-                                    !response.equals("Wrong Username or Password")) {
-                                MySharedPreferences.setStoredLoginStatus(Activity_Login.this, true);
-                                MySharedPreferences.setStoredUsername(Activity_Login.this, user_name);
-                                Intent i;
-                                if (user_name.equalsIgnoreCase("admin") && password.equalsIgnoreCase("admin")) {
-                                    MySharedPreferences.setIsAdminLoggedOn(Activity_Login.this, true);
-//                                    i = new Intent(Activity_Login.this, Activity_DoctorAppointmentList.class);
-//                                    finish();
-                                } else {
-//                                    i = new Intent(Activity_Login.this, Activity_DiseaseList.class);
-//                                    finish();
-                                }
-//                                startActivity(i);
-                            } else {
-                                Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT)
-                                        .show();
-
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-
-                        }
-
-                    }
-                }, error -> {
-
-                    hideProgressBar();
-                    Log.e(TAG, error.toString());
-
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("user_name", user_name);
-                params.put("password", password);
-                return params;
-            }
-
-        };
-
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-    }
-
 
     @Override
     public void onValidationFailed(List<ValidationError> errors) {

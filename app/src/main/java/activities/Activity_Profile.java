@@ -162,7 +162,7 @@ public class Activity_Profile extends BaseActivity implements Validator.Validati
     }
 
     private void setUserData(Res_UserProfile res_userProfile) {
-        if (res_userProfile.getList() != null) {
+        if (res_userProfile.getList() != null && res_userProfile.getList().size() !=0 ) {
             Res_UserProfile.List list = res_userProfile.getList().get(0);
             mUserProfileUserName.setText(list.getUsername());
             mUserProfilePhone.setText(list.getPhoneNo());
@@ -171,8 +171,10 @@ public class Activity_Profile extends BaseActivity implements Validator.Validati
             mUserProfileCompany.setText(list.getCompany());
             mUserProfileAddress.setText(list.getAddress());
             mUserProfilePresences.setText(list.getPresence());
+            if(list.getPhotoUrl()!=null && !list.getPhotoUrl().isEmpty())
             Picasso.get().load(list.getPhotoUrl()).into(mUserProfileImage);
-
+        }else{
+            mUserProfileEdit.setVisibility(View.GONE);
         }
     }
 

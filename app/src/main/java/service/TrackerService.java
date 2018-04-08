@@ -28,18 +28,49 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import java.util.Objects;
+
 public class TrackerService extends Service {
 
     private static final String TAG = TrackerService.class.getSimpleName();
+    private static final String EXTRA_USER_NAME = "user_name";
+    protected BroadcastReceiver stopReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "received stop broadcast");
+            // Stop the service when the notification is tapped
+            unregisterReceiver(stopReceiver);
+            stopSelf();
+        }
+    };
+    private String mUsername;
+
+    public static Intent newIntent(Context context, String userName) {
+        Intent intent = new Intent(context, TrackerService.class);
+        intent.putExtra(EXTRA_USER_NAME, userName);
+        return intent;
+    }
 
     @Override
-    public IBinder onBind(Intent intent) {return null;}
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        mUsername = intent.getStringExtra(EXTRA_USER_NAME);
+        requestLocationUpdates();
+        return super.onStartCommand(intent, flags, startId);
+
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         buildNotification();
-        loginToFirebase();
+//        loginToFirebase();
+
     }
 
     private void buildNotification() {
@@ -57,41 +88,14 @@ public class TrackerService extends Service {
         startForeground(1, builder.build());
     }
 
-    protected BroadcastReceiver stopReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "received stop broadcast");
-            // Stop the service when the notification is tapped
-            unregisterReceiver(stopReceiver);
-            stopSelf();
-        }
-    };
-
-    private void loginToFirebase() {
-        String email = "huntjigsaw97@gmail.com";
-        String password = "huntjigsaw";
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(
-                email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>(){
-            @Override
-            public void onComplete(Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "firebase auth success");
-                    requestLocationUpdates();
-                } else {
-                    Log.d(TAG, "firebase auth failed");
-                }
-            }
-        });
-    }
 
     private void requestLocationUpdates() {
         @SuppressLint("RestrictedApi") LocationRequest request = new LocationRequest();
-        request.setInterval(10000);
+        request.setInterval(1000);
         request.setFastestInterval(5000);
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
-//        final String path = getString(R.string.firebase_path) + "/" + getString(R.string.transport_id);
-        final String path = "locations/shrung";
+        final String path = "locations/" + mUsername;
         int permission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
         if (permission == PackageManager.PERMISSION_GRANTED) {

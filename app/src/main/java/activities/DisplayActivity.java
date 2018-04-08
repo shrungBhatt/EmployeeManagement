@@ -1,6 +1,7 @@
 package activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
@@ -30,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.projects.shrungbhatt.employeemanagement.R;
+
 import service.TrackerService;
 
 import java.util.HashMap;
@@ -37,16 +39,25 @@ import java.util.HashMap;
 public class DisplayActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final String TAG = DisplayActivity.class.getSimpleName();
+    private static final String EXTRA_USER_NAME = "user_name";
+    private static final int PERMISSIONS_REQUEST = 1;
     private HashMap<String, Marker> mMarkers = new HashMap<>();
     private GoogleMap mMap;
+    private String mUsername;
 
-    private static final int PERMISSIONS_REQUEST = 1;
+    public static Intent newIntent(Context context, String userName) {
+        Intent intent = new Intent(context, DisplayActivity.class);
+        intent.putExtra(EXTRA_USER_NAME, userName);
+        return intent;
+    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display);
+
+        mUsername = getIntent().getStringExtra(EXTRA_USER_NAME);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -57,6 +68,7 @@ public class DisplayActivity extends FragmentActivity implements OnMapReadyCallb
         assert lm != null;
         if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Toast.makeText(this, "Please enable location services", Toast.LENGTH_SHORT).show();
+            finish();
         }
 
         // Check location permission is granted - if it is, start
@@ -73,8 +85,9 @@ public class DisplayActivity extends FragmentActivity implements OnMapReadyCallb
     }
 
     private void startTrackerService() {
-        startService(new Intent(this, TrackerService.class));
+        startService(TrackerService.newIntent(this, mUsername));
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
@@ -83,6 +96,8 @@ public class DisplayActivity extends FragmentActivity implements OnMapReadyCallb
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // Start the service when the permission is granted
             startTrackerService();
+        }else {
+            finish();
         }
     }
 
@@ -90,24 +105,12 @@ public class DisplayActivity extends FragmentActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap) {
         // Authenticate with Firebase when the Google map is loaded
         mMap = googleMap;
-        mMap.setMaxZoomPreference(16);
-        loginToFirebase();
+        mMap.setMaxZoomPreference(18);
+        mMap.setMinZoomPreference(6);
+        subscribeToUpdates();
+
     }
 
-    private void loginToFirebase() {
-        String email = "huntjigsaw97@gmail.com";
-        String password = "huntjigsaw";
-        // Authenticate with Firebase and subscribe to updates
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(
-                email, password).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        subscribeToUpdates();
-                        Log.d(TAG, "firebase auth success");
-                    } else {
-                        Log.d(TAG, "firebase auth failed");
-                    }
-                });
-    }
 
     private void subscribeToUpdates() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(getString(R.string.firebase_path));
@@ -149,16 +152,16 @@ public class DisplayActivity extends FragmentActivity implements OnMapReadyCallb
         LatLng location = new LatLng(lat, lng);
         if (!mMarkers.containsKey(key)) {
             mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(key).position(location)));
+            mMarkers.get(key).showInfoWindow();
         } else {
             mMarkers.get(key).setPosition(location);
+            mMarkers.get(key).showInfoWindow();
         }
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (Marker marker : mMarkers.values()) {
-            builder.include(marker.getPosition());
-        }
+
+        builder.include(mMarkers.get(key).getPosition());
         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
     }
-
 
 
 }
