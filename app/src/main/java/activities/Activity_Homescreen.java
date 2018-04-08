@@ -40,12 +40,14 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import listeners.ServiceCallBack;
 import model.Res_FetchAttendances;
+import model.Res_UserProfile;
 import service.TrackerService;
 import utils.MySharedPreferences;
 import utils.URLGenerator;
 
-public class Activity_Homescreen extends BaseActivity {
+public class Activity_Homescreen extends BaseActivity implements ServiceCallBack {
 
     private final String TAG = getClass().getSimpleName();
     private static final int PERMISSIONS_REQUEST = 1;
@@ -56,6 +58,7 @@ public class Activity_Homescreen extends BaseActivity {
 
     private CaldroidFragment caldroidFragment;
     private SimpleDateFormat mFormatter;
+    private String mPresences;
 
 
     @SuppressLint("SimpleDateFormat")
@@ -151,10 +154,81 @@ public class Activity_Homescreen extends BaseActivity {
 
         };
 
+        showProgressBar(this,TAG);
+        StringRequest stringRequest1 = new StringRequest(Request.Method.POST,
+                URLGenerator.FETCH_USER_PROFILE,
+                response -> {
+                    hideProgressBar();
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        Gson gson = new Gson();
+                        Res_UserProfile res_userProfile;
+                        res_userProfile = gson.fromJson(jsonObject.toString(), Res_UserProfile.class);
+                        mPresences = res_userProfile.getList().get(0).getPresence();
+                    } catch (Exception e) {
+                        hideProgressBar();
+                        e.printStackTrace();
+                    }
+
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.getMessage();
+                hideProgressBar();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("user_name", userName);
+                return params;
+            }
+
+        };
+
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+        requestQueue.add(stringRequest1);
 
 
+    }
+
+    private void fetchUserProfile(final String userName) {
+        showProgressBar(this, TAG);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                URLGenerator.FETCH_USER_PROFILE,
+                response -> {
+                    hideProgressBar();
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        Gson gson = new Gson();
+                        Res_UserProfile res_userProfile;
+                        res_userProfile = gson.fromJson(jsonObject.toString(), Res_UserProfile.class);
+                        mPresences = res_userProfile.getList().get(0).getPresence();
+                    } catch (Exception e) {
+                        hideProgressBar();
+                        e.printStackTrace();
+                    }
+
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.getMessage();
+                hideProgressBar();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("user_name", userName);
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 
     private void checkIsSubmitted() {
@@ -171,12 +245,11 @@ public class Activity_Homescreen extends BaseActivity {
                         showToastMessage("You have already submitted today's attendance");
                     }else if(response.equalsIgnoreCase("FALSE")){
 
-                        startActivity(new Intent(this, SubmitAttendanceActivity.class));
+//                        startActivity(new Intent(this, SubmitAttendanceActivity.class));
+                        startActivity(SubmitAttendanceActivity.newIntent(this,mPresences));
                     }
 
-                }, error -> {
-            hideProgressBar();
-        }) {
+                }, error -> hideProgressBar()) {
 
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
@@ -229,6 +302,8 @@ public class Activity_Homescreen extends BaseActivity {
             return true;
         }else if(id == R.id.menu_user_profile){
             startActivity(new Intent(this,Activity_Profile.class));
+        }else if(id == R.id.stop_service_menu_item){
+            stopService(new Intent(this,TrackerService.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -257,5 +332,10 @@ public class Activity_Homescreen extends BaseActivity {
         }else {
             finish();
         }
+    }
+
+    @Override
+    public void serviceCallBack() {
+        stopService(new Intent(Activity_Homescreen.this,TrackerService.class));
     }
 }

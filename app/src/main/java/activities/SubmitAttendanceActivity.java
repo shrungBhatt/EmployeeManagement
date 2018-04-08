@@ -1,6 +1,7 @@
 package activities;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -42,6 +43,7 @@ import utils.URLGenerator;
 
 public class SubmitAttendanceActivity extends BaseActivity {
 
+    private static final String EXTRA_PRESENCES = "extra_presences";
     private final String TAG = getClass().getSimpleName();
     @BindView(R.id.upload_date_tv)
     TextView mUploadDateTv;
@@ -62,6 +64,14 @@ public class SubmitAttendanceActivity extends BaseActivity {
     private String mImage;
     private SimpleDateFormat mDateFormat;
     private SimpleDateFormat mTimeFormat;
+    private String mPresences;
+
+
+    public static Intent newIntent(Context context, String presences) {
+        Intent intent = new Intent(context, SubmitAttendanceActivity.class);
+        intent.putExtra(EXTRA_PRESENCES, presences);
+        return intent;
+    }
 
     @SuppressLint("SimpleDateFormat")
     @Override
@@ -69,6 +79,8 @@ public class SubmitAttendanceActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submit_attendance);
         ButterKnife.bind(this);
+
+        mPresences = getIntent().getStringExtra(EXTRA_PRESENCES);
 
         mDateFormat = new SimpleDateFormat("dd MMM yyyy");
         mTimeFormat = new SimpleDateFormat("hh:mm a");
@@ -83,21 +95,15 @@ public class SubmitAttendanceActivity extends BaseActivity {
 
     private void addAttendance(final String date, final String time, final String photoDesc,
                                final String image, final String userName,
-                               final String isSubmitted) {
+                               final String isSubmitted, final String presences) {
 
-        showProgressBar(this,TAG);
+        showProgressBar(this, TAG);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+        StringRequest stringRequest1 = new StringRequest(Request.Method.POST,
                 URLGenerator.ADD_ATTENDANCE,
                 response -> {
                     hideProgressBar();
                     if (response.equals("Insert SuccessFul")) {
-                        Toast.makeText(getApplicationContext(), "Registration Complete",
-                                Toast.LENGTH_SHORT).show();
-
-                        startActivity(new Intent(this,Activity_Homescreen.class).
-                        addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP));
-                        finish();
 
                     } else {
                         showToastMessage(response);
@@ -126,8 +132,47 @@ public class SubmitAttendanceActivity extends BaseActivity {
 
         };
 
+        StringRequest stringRequest2 = new StringRequest(Request.Method.POST,
+                URLGenerator.UPDATE_PRESENCES,
+                response -> {
+                    hideProgressBar();
+                    if (response.equals("Insert SuccessFul")) {
+                        Toast.makeText(getApplicationContext(), "Registration Complete",
+                                Toast.LENGTH_SHORT).show();
+
+                        startActivity(new Intent(this, Activity_Homescreen.class).
+                                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                        finish();
+
+                    } else {
+                        mPresences = presences;
+                        showToastMessage(response);
+                    }
+
+                }, error -> {
+            mPresences = presences;
+            hideProgressBar();
+            error.getMessage();
+
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+
+                params.put("user_name", userName);
+                params.put("presences", presences);
+
+
+                return params;
+            }
+
+
+        };
+
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
+        requestQueue.add(stringRequest1);
+        requestQueue.add(stringRequest2);
 
     }
 
@@ -138,10 +183,15 @@ public class SubmitAttendanceActivity extends BaseActivity {
                 requestPersmission();
                 break;
             case R.id.upload_attendance_fab_button:
+                int presence = Integer.valueOf(mPresences.trim());
+                presence += 1;
+                String presences = String.valueOf(presence);
+
                 addAttendance(mDateFormat.format(new Date()),
                         mTimeFormat.format(new Date()),
-                        UUID.randomUUID().toString()+"img",getImage(),
-                        MySharedPreferences.getStoredUsername(this),"1");
+                        UUID.randomUUID().toString() + "img", getImage(),
+                        MySharedPreferences.getStoredUsername(this), "1",
+                        presences);
                 break;
         }
     }
@@ -156,7 +206,7 @@ public class SubmitAttendanceActivity extends BaseActivity {
                 mUploadDocumentImage.setVisibility(View.GONE);
                 mUploadDocumentTv.setVisibility(View.GONE);
                 try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),Uri.fromFile(out));
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(out));
                     mDocumentsImageView.setImageBitmap(bitmap);
                     setImage(getStringImage(bitmap));
                 } catch (IOException e) {

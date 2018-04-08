@@ -150,13 +150,7 @@ public class DisplayActivity extends FragmentActivity implements OnMapReadyCallb
         double lat = Double.parseDouble(value.get("latitude").toString());
         double lng = Double.parseDouble(value.get("longitude").toString());
         LatLng location = new LatLng(lat, lng);
-//        if (!mMarkers.containsKey(key)) {
-//            mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(key).position(location)));
-//            mMarkers.get(key).showInfoWindow();
-//        } else {
-//            mMarkers.get(key).setPosition(location);
-//            mMarkers.get(key).showInfoWindow();
-//        }
+
         if (key.equalsIgnoreCase(mUsername)) {
             if (!mMarkers.containsKey(mUsername)) {
                 mMarkers.put(mUsername, mMap.addMarker(new MarkerOptions().title(key).position(location)));

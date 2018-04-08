@@ -13,4 +13,9 @@
         android:title="@string/log_out"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/stop_service_menu_item"
+        android:title="@string/stop_tracking"
+        app:showAsAction="never" />
+
 </menu>

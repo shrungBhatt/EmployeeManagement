@@ -21,5 +21,7 @@ public class URLGenerator {
 
     public static final String FETCH_USERS = BASE_URL + "/em_fetch_users.php";
 
+    public static final String UPDATE_PRESENCES = BASE_URL + "/em_update_presences.php";
+
 
 }

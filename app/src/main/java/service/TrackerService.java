@@ -34,6 +34,7 @@ public class TrackerService extends Service {
 
     private static final String TAG = TrackerService.class.getSimpleName();
     private static final String EXTRA_USER_NAME = "user_name";
+
     protected BroadcastReceiver stopReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -44,6 +45,12 @@ public class TrackerService extends Service {
         }
     };
     private String mUsername;
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(TAG,"onDestroy called");
+    }
 
     public static Intent newIntent(Context context, String userName) {
         Intent intent = new Intent(context, TrackerService.class);
@@ -61,7 +68,7 @@ public class TrackerService extends Service {
 
         mUsername = intent.getStringExtra(EXTRA_USER_NAME);
         requestLocationUpdates();
-        return super.onStartCommand(intent, flags, startId);
+        return super.onStartCommand(intent,flags,startId);
 
     }
 
