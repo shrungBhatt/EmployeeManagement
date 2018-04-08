@@ -102,42 +102,36 @@ public class Activity_Login extends BaseActivity implements Validator.Validation
         showProgressBar(this, TAG);
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 URLGenerator.LOGIN_USER,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        hideProgressBar();
-                        try {
-                            if (response != null &&
-                                    !response.equals("Wrong Username or Password")) {
-                                MySharedPreferences.setStoredLoginStatus(Activity_Login.this, true);
-                                MySharedPreferences.setStoredUsername(Activity_Login.this, user_name);
-                                Intent i;
-                                if (user_name.equalsIgnoreCase("admin")&&password.equalsIgnoreCase("admin")) {
-                                    MySharedPreferences.setIsAdminLoggedOn(Activity_Login.this, true);
-                                    i = new Intent(Activity_Login.this, Activity_Homescreen.class);
-                                    finish();
-                                } else {
-                                    i = new Intent(Activity_Login.this, Activity_Homescreen.class);
-                                    finish();
-                                }
-                                startActivity(i);
+                response -> {
+                    hideProgressBar();
+                    try {
+                        if (response != null &&
+                                !response.equals("Wrong Username or Password")) {
+                            MySharedPreferences.setStoredLoginStatus(Activity_Login.this, true);
+                            MySharedPreferences.setStoredUsername(Activity_Login.this, user_name);
+                            Intent i;
+                            if (user_name.equalsIgnoreCase("admin")&&password.equalsIgnoreCase("admin")) {
+                                MySharedPreferences.setIsAdminLoggedOn(Activity_Login.this, true);
+                                i = new Intent(Activity_Login.this, Activity_Homescreen.class);
+                                finish();
                             } else {
-                                Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT)
-                                        .show();
-
+                                i = new Intent(Activity_Login.this, Activity_Homescreen.class);
+                                finish();
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                            startActivity(i);
+                        } else {
+                            Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT)
+                                    .show();
 
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
+
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        hideProgressBar();
-                        Log.e(TAG, error.toString());
-                    }
+                error -> {
+                    hideProgressBar();
+                    Log.e(TAG, error.toString());
                 }) {
             @Override
             protected Map<String, String> getParams() {
@@ -190,15 +184,12 @@ public class Activity_Login extends BaseActivity implements Validator.Validation
                         }
 
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+                }, error -> {
 
-                hideProgressBar();
-                Log.e(TAG, error.toString());
+                    hideProgressBar();
+                    Log.e(TAG, error.toString());
 
-            }
-        }) {
+                }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
