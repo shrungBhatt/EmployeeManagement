@@ -73,23 +73,23 @@ public class DisplayActivity extends FragmentActivity implements OnMapReadyCallb
 
         // Check location permission is granted - if it is, start
         // the service, otherwise request the permission
-        int permission = ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permission == PackageManager.PERMISSION_GRANTED) {
-            startTrackerService();
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST);
-        }
+//        int permission = ContextCompat.checkSelfPermission(this,
+//                android.Manifest.permission.ACCESS_FINE_LOCATION);
+//        if (permission == PackageManager.PERMISSION_GRANTED) {
+//            startTrackerService();
+//        } else {
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                    PERMISSIONS_REQUEST);
+//        }
     }
 
     private void startTrackerService() {
-        startService(TrackerService.newIntent(this, mUsername));
+//        startService(TrackerService.newIntent(this, mUsername));
     }
 
 
-    @Override
+    /*@Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
             grantResults) {
         if (requestCode == PERMISSIONS_REQUEST && grantResults.length == 1
@@ -99,7 +99,7 @@ public class DisplayActivity extends FragmentActivity implements OnMapReadyCallb
         }else {
             finish();
         }
-    }
+    }*/
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -150,17 +150,27 @@ public class DisplayActivity extends FragmentActivity implements OnMapReadyCallb
         double lat = Double.parseDouble(value.get("latitude").toString());
         double lng = Double.parseDouble(value.get("longitude").toString());
         LatLng location = new LatLng(lat, lng);
-        if (!mMarkers.containsKey(key)) {
-            mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(key).position(location)));
-            mMarkers.get(key).showInfoWindow();
-        } else {
-            mMarkers.get(key).setPosition(location);
-            mMarkers.get(key).showInfoWindow();
-        }
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+//        if (!mMarkers.containsKey(key)) {
+//            mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(key).position(location)));
+//            mMarkers.get(key).showInfoWindow();
+//        } else {
+//            mMarkers.get(key).setPosition(location);
+//            mMarkers.get(key).showInfoWindow();
+//        }
+        if (key.equalsIgnoreCase(mUsername)) {
+            if (!mMarkers.containsKey(mUsername)) {
+                mMarkers.put(mUsername, mMap.addMarker(new MarkerOptions().title(key).position(location)));
+                mMarkers.get(mUsername).showInfoWindow();
+            } else {
+                mMarkers.get(mUsername).setPosition(location);
+                mMarkers.get(mUsername).showInfoWindow();
+            }
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        builder.include(mMarkers.get(key).getPosition());
-        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
+            builder.include(mMarkers.get(mUsername).getPosition());
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
+        }
+
     }
 
 

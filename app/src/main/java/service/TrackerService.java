@@ -69,7 +69,6 @@ public class TrackerService extends Service {
     public void onCreate() {
         super.onCreate();
         buildNotification();
-//        loginToFirebase();
 
     }
 

@@ -1,11 +1,16 @@
 package activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,12 +41,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import model.Res_FetchAttendances;
+import service.TrackerService;
 import utils.MySharedPreferences;
 import utils.URLGenerator;
 
 public class Activity_Homescreen extends BaseActivity {
 
     private final String TAG = getClass().getSimpleName();
+    private static final int PERMISSIONS_REQUEST = 1;
     @BindView(R.id.calendar_view_1)
     RelativeLayout mCalendarView;
     @BindView(R.id.add_attendance_fab_button)
@@ -58,6 +65,15 @@ public class Activity_Homescreen extends BaseActivity {
         setContentView(R.layout.activity_homescreen);
         ButterKnife.bind(this);
 
+        int permission = ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permission == PackageManager.PERMISSION_GRANTED) {
+            startTrackerService();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST);
+        }
 
         mFormatter = new SimpleDateFormat("dd MMM yyyy");
 
@@ -99,6 +115,9 @@ public class Activity_Homescreen extends BaseActivity {
 
     }
 
+    private void startTrackerService() {
+        startService(TrackerService.newIntent(this, MySharedPreferences.getStoredUsername(this)));
+    }
 
     private void fetchAttendance(final String userName) {
         showProgressBar(this, TAG);
@@ -228,4 +247,15 @@ public class Activity_Homescreen extends BaseActivity {
     }
 
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
+            grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST && grantResults.length == 1
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Start the service when the permission is granted
+            startTrackerService();
+        }else {
+            finish();
+        }
+    }
 }
